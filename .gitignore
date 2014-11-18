@@ -2,3 +2,4 @@
 !/vlcgtk3_0.c
 !/makefile
 !/.gitignore
+!/.gui.c
