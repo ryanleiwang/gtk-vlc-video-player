@@ -15,6 +15,7 @@ void destroy(GtkWidget *widget, gpointer data);
 void player_widget_on_realize(GtkWidget *widget, gpointer data);
 void on_open(GtkWidget *widget, gpointer data);
 void open_media(const char* uri);
+void on_full_screen(GtkWidget *widget, gpointer data);
 void on_playpause(GtkWidget *widget, gpointer data);
 void on_stop(GtkWidget *widget, gpointer data);
 void play(void);
@@ -23,7 +24,7 @@ gboolean _update_scale(gpointer data);
 void on_value_change(GtkWidget *widget, gpointer data);
 
 libvlc_media_t *media;
-libvlc_media_player_t *media_player;
+libvlc_media_player_t *media_player, *full_screen_media_player;
 libvlc_instance_t *vlc_inst;
 
 GtkWidget *playpause_button,*play_icon_image,*pause_icon_image,*stop_icon_image,
@@ -82,6 +83,25 @@ void on_stop(GtkWidget *widget, gpointer data) {
     libvlc_media_player_stop(media_player);
 }
 
+void on_full_screen(GtkWidget *widget, gpointer data) {
+	GtkWidget *full_window, *media_box, *full_screen_player_widget;
+	full_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	g_signal_connect(full_window, "destroy", G_CALLBACK(destroy), NULL);
+    gtk_container_set_border_width (GTK_CONTAINER (full_window), 0);
+	media_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, FALSE);
+	gtk_container_add(GTK_CONTAINER(full_window), media_box);
+	full_screen_player_widget = gtk_drawing_area_new();
+    gtk_box_pack_start(GTK_BOX(media_box), full_screen_player_widget, TRUE, TRUE, 0);
+
+    full_screen_media_player = libvlc_media_player_new_from_media(media);
+	g_signal_connect(G_OBJECT(full_screen_player_widget), "realize", G_CALLBACK(player_widget_on_realize), full_screen_media_player);
+	gtk_widget_show_all(full_window);
+	gtk_window_fullscreen(GTK_WINDOW(full_window));
+	
+	libvlc_media_player_play(full_screen_media_player);
+	libvlc_media_player_set_time(full_screen_media_player, libvlc_media_player_get_time(media_player));
+}
+
 
 void on_value_change(GtkWidget *widget, gpointer data)
 {
@@ -94,12 +114,14 @@ gboolean _update_scale(gpointer data){
 	// 获取当前打开视频的长度，时间单位为ms
 	video_length = libvlc_media_player_get_length(media_player);	
 	current_play_time = libvlc_media_player_get_time(media_player);
-
+	
 	g_signal_handlers_block_by_func(G_OBJECT(process_scale), on_value_change, NULL);
 	gtk_adjustment_set_value(process_adjuest,current_play_time/video_length*100);
 	g_signal_handlers_unblock_by_func(G_OBJECT(process_scale), on_value_change, NULL);
 	return current_play_time;
 }
+
+
 
 void play(void) {
     libvlc_media_player_play(media_player);
@@ -123,7 +145,8 @@ int main( int argc, char *argv[] ) {
               *filemenu_openitem,
               *player_widget,
               *hbuttonbox,
-              *stop_button;
+              *stop_button,
+			  *full_screen_button;
 	
     gtk_init (&argc, &argv);
 	
@@ -158,9 +181,11 @@ int main( int argc, char *argv[] ) {
     //setup controls
     playpause_button = gtk_button_new_from_icon_name("media-playback-start", GTK_ICON_SIZE_BUTTON);
     stop_button = gtk_button_new_from_icon_name("media-playback-stop", GTK_ICON_SIZE_BUTTON);
+	full_screen_button = gtk_button_new_from_icon_name("view-fullscreen", GTK_ICON_SIZE_BUTTON);
 	
     g_signal_connect(playpause_button, "clicked", G_CALLBACK(on_playpause), NULL);
     g_signal_connect(stop_button, "clicked", G_CALLBACK(on_stop), NULL);
+	g_signal_connect(full_screen_button, "clicked", G_CALLBACK(on_full_screen), NULL);
 	
     hbuttonbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_set_border_width(GTK_CONTAINER(hbuttonbox), BORDER_WIDTH);
@@ -170,6 +195,7 @@ int main( int argc, char *argv[] ) {
     gtk_box_pack_start(GTK_BOX(hbuttonbox), stop_button, FALSE, FALSE, 0);
 
 	gtk_box_pack_start(GTK_BOX(hbox), hbuttonbox, FALSE, FALSE, 0);
+	gtk_box_pack_end(GTK_BOX(hbox), full_screen_button, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, TRUE, 0);
 
     //setup vlc
