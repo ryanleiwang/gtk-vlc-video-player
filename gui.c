@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 
     playpause_button = gtk_button_new_from_icon_name("media-playback-start", GTK_ICON_SIZE_BUTTON);
     stop_button = gtk_button_new_from_icon_name("media-playback-stop", GTK_ICON_SIZE_BUTTON);
-    
+
     gtk_box_pack_start(GTK_BOX(hbuttonbox), playpause_button, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(hbuttonbox), stop_button, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(hbox), hbuttonbox, FALSE, FALSE, 0);
@@ -75,12 +75,12 @@ int main(int argc, char* argv[])
     gtk_box_pack_start(GTK_BOX(hbox), process_scale, TRUE, TRUE, 0);
     gtk_scale_set_draw_value (GTK_SCALE(process_scale), FALSE);
     gtk_scale_set_has_origin (GTK_SCALE(process_scale), TRUE);
-    gtk_scale_set_value_pos(GTK_SCALE(process_scale), 5);
+    gtk_scale_set_value_pos(GTK_SCALE(process_scale), 0);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, TRUE, 0);
 
     // 显示所有控件，并运行gtk程序
     gtk_widget_show_all(window);
     gtk_main ();
-    
+
     return 0;
 }

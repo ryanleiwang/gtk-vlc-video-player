@@ -98,7 +98,7 @@ gboolean _update_scale(gpointer data){
 	g_signal_handlers_block_by_func(G_OBJECT(process_scale), on_value_change, NULL);
 	gtk_adjustment_set_value(process_adjuest,current_play_time/video_length*100);
 	g_signal_handlers_unblock_by_func(G_OBJECT(process_scale), on_value_change, NULL);
-	return current_play_time;
+	return G_SOURCE_CONTINUE;
 }
 
 void play(void) {
