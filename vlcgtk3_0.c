@@ -62,7 +62,6 @@ void open_media(const char* uri) {
 
 	current_play_time = 0.0f;
 	gtk_scale_set_value_pos(GTK_SCALE(process_scale), current_play_time/video_length*100);
-	
     play();
 	g_timeout_add(500,_update_scale,process_scale);
     libvlc_media_release(media);
@@ -92,7 +91,7 @@ void on_value_change(GtkWidget *widget, gpointer data)
 
 gboolean _update_scale(gpointer data){
 	// 获取当前打开视频的长度，时间单位为ms
-	video_length = libvlc_media_player_get_length(media_player);	
+	video_length = libvlc_media_player_get_length(media_player);
 	current_play_time = libvlc_media_player_get_time(media_player);
 
 	g_signal_handlers_block_by_func(G_OBJECT(process_scale), on_value_change, NULL);
@@ -124,9 +123,9 @@ int main( int argc, char *argv[] ) {
               *player_widget,
               *hbuttonbox,
               *stop_button;
-	
+
     gtk_init (&argc, &argv);
-	
+
     // setup window
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
@@ -147,7 +146,7 @@ int main( int argc, char *argv[] ) {
     gtk_menu_shell_append(GTK_MENU_SHELL(filemenu), filemenu_openitem);
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(fileitem), filemenu);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), fileitem);
-	
+
     gtk_box_pack_start(GTK_BOX(vbox), menubar, FALSE, FALSE, 0);
     g_signal_connect(filemenu_openitem, "activate", G_CALLBACK(on_open), window);
 
@@ -158,14 +157,14 @@ int main( int argc, char *argv[] ) {
     //setup controls
     playpause_button = gtk_button_new_from_icon_name("media-playback-start", GTK_ICON_SIZE_BUTTON);
     stop_button = gtk_button_new_from_icon_name("media-playback-stop", GTK_ICON_SIZE_BUTTON);
-	
+
     g_signal_connect(playpause_button, "clicked", G_CALLBACK(on_playpause), NULL);
     g_signal_connect(stop_button, "clicked", G_CALLBACK(on_stop), NULL);
-	
+
     hbuttonbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_set_border_width(GTK_CONTAINER(hbuttonbox), BORDER_WIDTH);
     gtk_button_box_set_layout(GTK_BUTTON_BOX(hbuttonbox), GTK_BUTTONBOX_START);
-	
+
     gtk_box_pack_start(GTK_BOX(hbuttonbox), playpause_button, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(hbuttonbox), stop_button, FALSE, FALSE, 0);
 
