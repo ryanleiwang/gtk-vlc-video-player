@@ -29,7 +29,7 @@ libvlc_media_player_t *media_player;
 libvlc_instance_t *vlc_inst;
 
 GtkWidget *play_icon_image, *pause_icon_image, *stop_icon_image;
-GtkWidget *window, *player_widget, *pause_button, *stop_button, *process_scale, *hbox, *vbox;
+GtkWidget *window, *player_widget, *pause_button, *stop_button, *process_scale, *hbox, *vbox, *menubar;
 GtkWidget *full_screen_pause_button, *ctrl_process_scale, *ctrl_window;
 GtkAdjustment *process_adjuest;
 gint width, height;
@@ -163,6 +163,7 @@ void on_full_screen(GtkWidget *widget, gpointer data)
     gtk_window_fullscreen(GTK_WINDOW(window));
     is_fullscreen = TRUE;
     gtk_widget_hide(hbox);
+    gtk_widget_hide(menubar);
     gtk_widget_show_all(GTK_WIDGET(ctrl_window));
 
     if(libvlc_media_player_is_playing(media_player) == 1)
@@ -180,6 +181,7 @@ void on_quit_full_screen(GtkWidget *widget, gpointer data)
     gtk_window_unfullscreen(GTK_WINDOW(window));
     is_fullscreen = FALSE;
     gtk_widget_show(hbox);
+    gtk_widget_show(menubar);
     gtk_widget_hide(ctrl_window);
     // 非全屏状态阻塞控制窗口的移动鼠标自动浮现
     g_signal_handlers_block_by_func(G_OBJECT(player_widget), on_mouse_motion, NULL);
@@ -187,7 +189,7 @@ void on_quit_full_screen(GtkWidget *widget, gpointer data)
 
 void main_window_init()
 {
-    GtkWidget   *menubar,
+    GtkWidget
                 *filemenu,
                 *fileitem,
                 *filemenu_openitem,
